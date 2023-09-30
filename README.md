@@ -11,9 +11,9 @@ and the Player can override those settings to mold the game rules as they wish.
 ## Concepts
 There are 3 major pieces to the Zindle System:
 1. [The Configuration](docs/configuration.md) is how the game developer exposes settings
-and game rules. This is done in 100% valid Rust using macros.
+and game rules. This is done in 100% valid Rust using macros and documentation.
 
-2. [The Zindle Scripts](docs/language.md) is the lightweight language used by game players.
+2. [The Zindle Scripts](docs/language.md) use a lightweight language and are created by game players.
 This languages allows them to override settings, react to events, and record state.
 
 3. [The Zindle Runtime](docs/runtime.md) is the Rust object that behaves as a virtual machine.
@@ -85,7 +85,7 @@ some example
 ```
 
 ## AI Generation
-One of the primary goals of Zindle is that it is consice, well defined, and simple enough
+One of the primary goals of Zindle is that it is concise, well defined, and simple enough
 that a well-trained Large Language Model can generate the configuration scripts.
 
 This would allow (eventually) for something like this:
