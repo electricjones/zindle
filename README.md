@@ -13,7 +13,7 @@ There are 3 major pieces to the Zindle System:
 1. [The Configuration](docs/configuration.md) is how the game developer exposes settings
 and game rules. This is done in 100% valid Rust using macros.
 
-2. [The Zindle Scripts](docs/zindle-lang.md) is the lightweight language used by game players.
+2. [The Zindle Scripts](docs/language.md) is the lightweight language used by game players.
 This languages allows them to override settings, react to events, and record state.
 
 3. [The Zindle Runtime](docs/runtime.md) is the Rust object that behaves as a virtual machine.
@@ -79,6 +79,10 @@ Then, the game can fetch settings from that Runtime, which will perform its eval
 - Debugging, IDE support, Language server.
 
 ## Examples
+A small example of the Zindle Language. See [examples](examples/) for more complete examples.
+```
+some example
+```
 
 ## AI Generation
 One of the primary goals of Zindle is that it is consice, well defined, and simple enough
