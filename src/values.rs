@@ -427,7 +427,7 @@ impl<'a> TryFrom<&'a Value> for &'a String {
     }
 }
 
-// This is impossible
+// This is impossible due to lifetime issues. See the above block for the equivilent
 // impl TryFrom<Value> for &str {
 //     type Error = ValueError;
 //
