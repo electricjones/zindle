@@ -98,6 +98,10 @@ impl Property {
     pub fn value(&self) -> &Value {
         self.value.as_ref().unwrap_or(&self.default)
     }
+
+    pub fn set_value(&mut self, value: Value) {
+        self.value = Some(value)
+    }
 }
 
 pub struct Collection {
