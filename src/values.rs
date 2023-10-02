@@ -1,4 +1,4 @@
-use std::convert::TryFrom;
+use std::{collections::HashMap, convert::TryFrom};
 
 // use crate::configuration::collection::{Map, Property, Routine};
 
@@ -7,7 +7,7 @@ pub enum ValueError {
     ConversionError,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Value {
     Int(i128),
     Uint(u128),
@@ -15,7 +15,8 @@ pub enum Value {
     String(String),
     Boolean(bool),
     Array(Vec<Value>),
-    // Dictionary(Box<dyn Map<String, Value, Property>>),
+    // Stick with HashMaps for now, maybe later a more generic Map
+    Dictionary(HashMap<String, Value>),
     // Routine(Routine),
 }
 
@@ -483,6 +484,16 @@ impl TryFrom<&Value> for bool {
 
 //////////////////////////////////////////////////
 
+impl TryFrom<&Value> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &Value) -> Result<Self, Self::Error> {
+        Ok(Value::from(value.clone()))
+    }
+}
+
+//////////////////////////////////////////////////
+
 impl<T> TryFrom<Vec<T>> for Value
 where
     T: TryInto<Value>,
@@ -517,33 +528,54 @@ where
     }
 }
 
-// impl<'a, T> TryFrom<&'a Vec<T>> for Value
-// where
-//     T: Clone + TryInto<Value>,
-//     <T as TryInto<Value>>::Error: std::fmt::Debug,
-// {
+////////////////////////////////////////////////////
+
+impl<V> TryFrom<HashMap<String, V>> for Value
+where
+    V: TryInto<Value>,
+    <V as TryInto<Value>>::Error: std::fmt::Debug,
+{
+    type Error = ValueError;
+
+    fn try_from(map: HashMap<String, V>) -> Result<Self, Self::Error> {
+        Ok(Value::Dictionary(
+            map.into_iter()
+                .map(|(k, v)| (k.into(), v.try_into().unwrap()))
+                .collect(),
+        ))
+    }
+}
+
+impl<'a, V> TryFrom<&'a Value> for HashMap<String, V>
+where
+    V: Clone + TryFrom<&'a Value>,
+    <V as TryFrom<&'a Value>>::Error: std::fmt::Debug,
+{
+    type Error = ValueError;
+
+    fn try_from(value: &'a Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Dictionary(map) => map
+                .iter()
+                .map(|(k, v)| {
+                    Ok((
+                        k.clone(),
+                        V::try_from(v).map_err(|_| ValueError::ConversionError)?,
+                    ))
+                })
+                .collect(),
+            _ => Err(ValueError::ConversionError),
+        }
+    }
+}
+
+// impl<'a> TryFrom<&'a Value> for &'a HashMap<String, Value> {
 //     type Error = ValueError;
 //
-//     fn try_from(vec: &'a Vec<T>) -> Result<Self, Self::Error> {
-//         Ok(Value::Array(
-//             vec.clone()
-//                 .into_iter()
-//                 .map(|item| item.try_into().unwrap())
-//                 .collect(),
-//         ))
+//     fn try_from(value: &'a Value) -> Result<Self, Self::Error> {
+//         match value {
+//             Value::Dictionary(map) => Ok(map),
+//             _ => Err(ValueError::ConversionError),
+//         }
 //     }
 // }
-//
-// impl<'a, T> TryFrom<&'a [T]> for Value
-// where
-//     T: Clone + Into<Value>,
-// {
-//     type Error = ValueError;
-//
-//     fn try_from(slice: &'a [T]) -> Result<Self, Self::Error> {
-//         Ok(Value::Array(
-//             slice.to_vec().into_iter().map(|item| item.into()).collect(),
-//         ))
-//     }
-// }
-// @todo: Maybe add iterators and test various fixed-length arrays and such

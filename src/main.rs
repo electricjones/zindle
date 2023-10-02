@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use configuration::collection::Property;
 use values::Value;
 
@@ -95,6 +97,11 @@ pub struct MyConfig {
 
     // I don't think that slices would really work here. Stick to vectors
     an_array: Property,
+    a_mixed_array: Property,
+
+    a_dictionary: Property,
+    a_mixed_dictionary: Property,
+
     sub: MySubConfig,
 }
 
@@ -122,6 +129,22 @@ impl Default for MyConfig {
                 ":an_array",
                 Value::try_from(Self::default_an_array()).unwrap(),
             ),
+            a_mixed_array: Property::new(
+                "a_mixed_array",
+                ":a_mixed_array",
+                Value::try_from(Self::default_a_mixed_array()).unwrap(),
+            ),
+            a_dictionary: Property::new(
+                "a_dictionary",
+                ":a_dictionary",
+                Value::try_from(Self::default_a_dictionary()).unwrap(),
+            ),
+            a_mixed_dictionary: Property::new(
+                "a_mixed_dictionary",
+                ":a_mixed_dictionary",
+                Value::try_from(Self::default_a_mixed_dictionary()).unwrap(),
+            ),
+
             sub: MySubConfig::default(),
         }
     }
@@ -181,6 +204,52 @@ impl MyConfig {
         self.an_array.set_value(built_value);
     }
 
+    pub fn default_a_mixed_array() -> Vec<Value> {
+        vec![
+            Value::try_from(76).unwrap(),
+            Value::try_from(true).unwrap(),
+            Value::try_from(12.8).unwrap(),
+        ]
+    }
+
+    pub fn a_mixed_array(&self) -> Vec<Value> {
+        self.a_mixed_array.value().try_into().unwrap()
+    }
+
+    pub fn set_a_mixed_array_value(&mut self, value: Vec<Value>) {
+        let built_value = Value::try_from(value).unwrap();
+        self.a_mixed_array.set_value(built_value);
+    }
+
+    pub fn default_a_dictionary() -> HashMap<String, f32> {
+        HashMap::from([("One".to_string(), 20.1), ("Two".to_string(), 30.2)])
+    }
+
+    pub fn a_dictionary(&self) -> HashMap<String, f32> {
+        self.a_dictionary.value().try_into().unwrap()
+    }
+
+    pub fn set_a_dictionary_value(&mut self, value: HashMap<String, f32>) {
+        let built_value = Value::try_from(value).unwrap();
+        self.a_dictionary.set_value(built_value);
+    }
+
+    pub fn default_a_mixed_dictionary() -> HashMap<String, Value> {
+        HashMap::from([
+            ("One".to_string(), Value::try_from(20000.001).unwrap()),
+            ("Two".to_string(), Value::try_from(true).unwrap()),
+        ])
+    }
+
+    pub fn a_mixed_dictionary(&self) -> HashMap<String, Value> {
+        self.a_mixed_dictionary.value().try_into().unwrap()
+    }
+
+    pub fn set_a_mixed_dictionary_value(&mut self, value: HashMap<String, Value>) {
+        let built_value = Value::try_from(value).unwrap();
+        self.a_mixed_dictionary.set_value(built_value);
+    }
+
     pub fn sub(&self) -> &MySubConfig {
         &self.sub
     }
@@ -206,7 +275,9 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use crate::MyConfig;
+    use std::collections::HashMap;
+
+    use crate::{values::Value, MyConfig};
 
     #[test]
     fn it_uses_the_default_values() {
@@ -266,7 +337,7 @@ mod tests {
     }
 
     #[test]
-    fn it_uses_the_default_values_for_arrays_using_vectors() {
+    fn it_uses_the_default_values_for_arrays() {
         let config = MyConfig::default();
 
         let expected = MyConfig::default_an_array();
@@ -274,11 +345,74 @@ mod tests {
     }
 
     #[test]
-    fn it_uses_statically_set_values_for_arrays_using_vectors() {
+    fn it_uses_statically_set_values_for_arrays() {
         let mut config = MyConfig::default();
 
         config.set_an_array_value(vec![false, true]);
 
         assert_eq!(vec![false, true], config.an_array());
+    }
+
+    #[test]
+    fn it_uses_the_default_values_for_dictionaries() {
+        let config = MyConfig::default();
+
+        let expected = MyConfig::default_a_dictionary();
+        assert_eq!(expected, config.a_dictionary());
+    }
+
+    #[test]
+    fn it_uses_statically_set_values_for_dictionaries() {
+        let mut config = MyConfig::default();
+
+        let expected = HashMap::from([("a".to_string(), 12.1), ("b".to_string(), 13.2)]);
+
+        config.set_a_dictionary_value(expected.clone());
+
+        assert_eq!(expected, config.a_dictionary());
+    }
+
+    #[test]
+    fn it_uses_the_default_values_for_mixed_arrays() {
+        let config = MyConfig::default();
+
+        let expected = MyConfig::default_a_mixed_array();
+        assert_eq!(expected, config.a_mixed_array());
+    }
+
+    #[test]
+    fn it_uses_statically_set_values_for_mixed_arrays() {
+        let mut config = MyConfig::default();
+
+        let expected = vec![
+            Value::try_from("oreo".to_string()).unwrap(),
+            Value::try_from(789).unwrap(),
+        ];
+
+        config.set_a_mixed_array_value(expected.clone());
+
+        assert_eq!(expected, config.a_mixed_array());
+    }
+
+    #[test]
+    fn it_uses_the_default_values_for_mixed_dictionaries() {
+        let config = MyConfig::default();
+
+        let expected = MyConfig::default_a_mixed_dictionary();
+        assert_eq!(expected, config.a_mixed_dictionary());
+    }
+
+    #[test]
+    fn it_uses_statically_set_values_for_mixed_dictionaries() {
+        let mut config = MyConfig::default();
+
+        let expected = HashMap::from([
+            ("a".to_string(), Value::try_from(true).unwrap()),
+            ("b".to_string(), Value::try_from(13.2).unwrap()),
+        ]);
+
+        config.set_a_mixed_dictionary_value(expected.clone());
+
+        assert_eq!(expected, config.a_mixed_dictionary());
     }
 }
