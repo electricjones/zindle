@@ -7,16 +7,15 @@ pub enum ValueError {
     ConversionError,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Value {
     Int(i128),
     Uint(u128),
     Float(f64),
     String(String),
     Boolean(bool),
-    // Array(Vec<Value>),
+    Array(Vec<Value>),
     // Dictionary(Box<dyn Map<String, Value, Property>>),
-    // Tuple(Vec<Value>),
     // Routine(Routine),
 }
 
@@ -450,6 +449,8 @@ impl<'a> TryFrom<&'a Value> for &'a str {
     }
 }
 
+///////////////////////////////////
+
 impl TryFrom<bool> for Value {
     type Error = ValueError;
 
@@ -479,30 +480,70 @@ impl TryFrom<&Value> for bool {
         }
     }
 }
-// impl<T: Into<Value>> TryFrom<Vec<T>> for Value {
+
+//////////////////////////////////////////////////
+
+impl<T> TryFrom<Vec<T>> for Value
+where
+    T: TryInto<Value>,
+    <T as TryInto<Value>>::Error: std::fmt::Debug,
+{
+    type Error = ValueError;
+
+    fn try_from(vec: Vec<T>) -> Result<Self, Self::Error> {
+        Ok(Value::Array(
+            vec.into_iter()
+                .map(|item| item.try_into().unwrap())
+                .collect(),
+        ))
+    }
+}
+
+impl<'a, T> TryFrom<&'a Value> for Vec<T>
+where
+    T: Clone + TryFrom<&'a Value>,
+    <T as TryFrom<&'a Value>>::Error: std::fmt::Debug,
+{
+    type Error = ValueError;
+
+    fn try_from(value: &'a Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Array(vec) => vec
+                .iter()
+                .map(|v| T::try_from(v).map_err(|_| ValueError::ConversionError))
+                .collect(),
+            _ => Err(ValueError::ConversionError),
+        }
+    }
+}
+
+// impl<'a, T> TryFrom<&'a Vec<T>> for Value
+// where
+//     T: Clone + TryInto<Value>,
+//     <T as TryInto<Value>>::Error: std::fmt::Debug,
+// {
 //     type Error = ValueError;
 //
-//     fn try_from(value: Vec<T>) -> Result<Self, Self::Error> {
-//         Ok(Value::Array(value.into_iter().map(T::into).collect()))
-//     }
-// }
-//
-// impl<T: Into<Value>, const N: usize> TryFrom<[T; N]> for Value {
-//     type Error = ValueError;
-//
-//     fn try_from(value: [T; N]) -> Result<Self, Self::Error> {
+//     fn try_from(vec: &'a Vec<T>) -> Result<Self, Self::Error> {
 //         Ok(Value::Array(
-//             value.into_iter().map(|v| v.clone().into()).collect(),
+//             vec.clone()
+//                 .into_iter()
+//                 .map(|item| item.try_into().unwrap())
+//                 .collect(),
 //         ))
 //     }
 // }
 //
-// impl<T: Into<Value>> TryFrom<&[T]> for Value {
+// impl<'a, T> TryFrom<&'a [T]> for Value
+// where
+//     T: Clone + Into<Value>,
+// {
 //     type Error = ValueError;
 //
-//     fn try_from(value: &[T]) -> Result<Self, Self::Error> {
+//     fn try_from(slice: &'a [T]) -> Result<Self, Self::Error> {
 //         Ok(Value::Array(
-//             value.into_iter().map(|v| v.clone().into()).collect(),
+//             slice.to_vec().into_iter().map(|item| item.into()).collect(),
 //         ))
 //     }
 // }
+// @todo: Maybe add iterators and test various fixed-length arrays and such

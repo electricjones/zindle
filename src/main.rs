@@ -1,5 +1,5 @@
 use configuration::collection::Property;
-use values::{Value, ValueError};
+use values::Value;
 
 pub mod configuration;
 pub mod runtime;
@@ -93,6 +93,8 @@ pub struct MyConfig {
     // todo: Allow them to simply implement Default and use those values in building this
     a_string: Property,
 
+    // I don't think that slices would really work here. Stick to vectors
+    an_array: Property,
     sub: MySubConfig,
 }
 
@@ -114,6 +116,11 @@ impl Default for MyConfig {
                 "a_string",
                 ":a_string",
                 Value::try_from(Self::default_a_string()).unwrap(),
+            ),
+            an_array: Property::new(
+                "an_array",
+                ":an_array",
+                Value::try_from(Self::default_an_array()).unwrap(),
             ),
             sub: MySubConfig::default(),
         }
@@ -161,6 +168,19 @@ impl MyConfig {
         self.a_string.set_value(built_value);
     }
 
+    pub fn default_an_array() -> Vec<bool> {
+        vec![true, false, false, true, false]
+    }
+
+    pub fn an_array(&self) -> Vec<bool> {
+        self.an_array.value().try_into().unwrap()
+    }
+
+    pub fn set_an_array_value(&mut self, value: Vec<bool>) {
+        let built_value = Value::try_from(value).unwrap();
+        self.an_array.set_value(built_value);
+    }
+
     pub fn sub(&self) -> &MySubConfig {
         &self.sub
     }
@@ -171,6 +191,11 @@ impl MyConfig {
 }
 
 fn main() {
+    let val = vec![true, false, false, true, false];
+    let value: Value = Value::try_from(val).unwrap();
+
+    println!("{:?}", value);
+
     // @todo: Runtime Builder Pattern
     // let mut runtime = Runtime::new();
 
@@ -238,5 +263,22 @@ mod tests {
         assert_eq!(111, config.sub().a_u64());
         assert_eq!("richards", config.sub().an_str());
         assert_eq!(222.333, config.sub().a_f32());
+    }
+
+    #[test]
+    fn it_uses_the_default_values_for_arrays_using_vectors() {
+        let config = MyConfig::default();
+
+        let expected = MyConfig::default_an_array();
+        assert_eq!(expected, config.an_array());
+    }
+
+    #[test]
+    fn it_uses_statically_set_values_for_arrays_using_vectors() {
+        let mut config = MyConfig::default();
+
+        config.set_an_array_value(vec![false, true]);
+
+        assert_eq!(vec![false, true], config.an_array());
     }
 }

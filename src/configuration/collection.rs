@@ -120,7 +120,7 @@ impl Map<String, Value, Property> for Collection {
     /// Keys are dot notation: a.b.c
     /// Any None's will return None for the entire path
     /// Any sub dictionaries will return another instance of Dictionary, which will just be the Map
-    fn get(&self, key: &String) -> Option<&Value> {
+    fn get(&self, _key: &String) -> Option<&Value> {
         todo!()
         // // TODO: If value is a Routine, execute the routine and cache the result
         // Some(&self.inner.get(key).unwrap().value)
