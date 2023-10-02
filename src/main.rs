@@ -580,6 +580,11 @@ mod tests {
         let actual: Vec<String> = built.try_into().unwrap();
         assert_eq!(original, actual);
 
+        let original = vec!["d".to_string(), "e".to_string()];
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: Vec<String> = (&built).try_into().unwrap();
+        assert_eq!(original, actual);
+
         // Hash Maps
         let original = hashmap! {
             "A".to_string() => true,
