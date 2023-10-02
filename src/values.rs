@@ -528,6 +528,24 @@ where
     }
 }
 
+impl<T> TryFrom<Value> for Vec<T>
+where
+    T: Clone + TryFrom<Value>,
+    <T as TryFrom<Value>>::Error: std::fmt::Debug,
+{
+    type Error = ValueError;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Array(vec) => vec
+                .iter()
+                .map(|v| T::try_from(v.clone()).map_err(|_| ValueError::ConversionError))
+                .collect(),
+            _ => Err(ValueError::ConversionError),
+        }
+    }
+}
+
 ////////////////////////////////////////////////////
 
 impl<V> TryFrom<HashMap<String, V>> for Value
@@ -561,6 +579,29 @@ where
                     Ok((
                         k.clone(),
                         V::try_from(v).map_err(|_| ValueError::ConversionError)?,
+                    ))
+                })
+                .collect(),
+            _ => Err(ValueError::ConversionError),
+        }
+    }
+}
+
+impl<V> TryFrom<Value> for HashMap<String, V>
+where
+    V: Clone + TryFrom<Value>,
+    <V as TryFrom<Value>>::Error: std::fmt::Debug,
+{
+    type Error = ValueError;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Dictionary(map) => map
+                .iter()
+                .map(|(k, v)| {
+                    Ok((
+                        k.clone(),
+                        V::try_from(v.clone()).map_err(|_| ValueError::ConversionError)?,
                     ))
                 })
                 .collect(),

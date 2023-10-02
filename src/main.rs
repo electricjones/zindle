@@ -275,6 +275,7 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    use maplit::hashmap;
     use std::collections::HashMap;
 
     use crate::{values::Value, MyConfig};
@@ -414,5 +415,152 @@ mod tests {
         config.set_a_mixed_dictionary_value(expected.clone());
 
         assert_eq!(expected, config.a_mixed_dictionary());
+    }
+
+    #[test]
+    fn it_handles_value_conversions() {
+        let value = 100 as i8;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 10000 as i16;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 1000000 as i32;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 100000000 as i64;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 10000000000 as i128;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 100 as u8;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 10000 as u16;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 10000 as u32;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 10000 as u64;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 10000 as u128;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 10000.1 as f32;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = 10000.1 as f64;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let value = true;
+        assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        let original = "test string".to_string();
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: String = built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = "test string2";
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: String = built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = "test string3";
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: &String = &built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = "test string".to_string();
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: String = built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = vec![true, false, true];
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: Vec<bool> = (&built).try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = vec![true, false, true];
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: Vec<bool> = built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = vec![1, 2, 3];
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: Vec<i32> = (&built).try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = vec![4, 5, 6];
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: Vec<i32> = built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = vec!["a", "b", "c"];
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: Vec<&str> = (&built).try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = vec!["d".to_string(), "e".to_string()];
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: Vec<String> = built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        // Hash Maps
+        let original = hashmap! {
+            "A".to_string() => true,
+            "B".to_string() => false
+        };
+
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: HashMap<String, bool> = (&built).try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = hashmap! {
+            "A".to_string() => true,
+            "B".to_string() => false
+        };
+
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: HashMap<String, bool> = built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = hashmap! {
+            "X".to_string() => 3,
+            "Y".to_string() => 8
+        };
+
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: HashMap<String, i32> = (&built).try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = hashmap! {
+            "X".to_string() => 1,
+            "Y".to_string() => 80
+        };
+
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: HashMap<String, i32> = built.try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = hashmap! {
+            "X".to_string() => "michael",
+            "Y".to_string() => "brian"
+        };
+
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: HashMap<String, &str> = (&built).try_into().unwrap();
+        assert_eq!(original, actual);
+
+        let original = hashmap! {
+            "X".to_string() => "michael".to_string(),
+            "Y".to_string() => "brian".to_string(),
+        };
+
+        let built = Value::try_from(original.clone()).unwrap();
+        let actual: HashMap<String, String> = built.try_into().unwrap();
+        assert_eq!(original, actual);
     }
 }
