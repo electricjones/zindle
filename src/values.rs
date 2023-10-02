@@ -415,7 +415,19 @@ impl TryFrom<&str> for Value {
     }
 }
 
-// TODO: Implement this
+// Implement for &String instead of &str because of lifetimes
+impl<'a> TryFrom<&'a Value> for &'a String {
+    type Error = ValueError;
+
+    fn try_from(value: &'a Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::String(s) => Ok(s),
+            _ => Err(ValueError::ConversionError),
+        }
+    }
+}
+
+// This is impossible
 // impl TryFrom<Value> for &str {
 //     type Error = ValueError;
 //

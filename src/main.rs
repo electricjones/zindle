@@ -7,7 +7,7 @@ pub mod values;
 
 pub struct MySubConfig {
     a_u64: Property,
-    // an_str: Property,
+    an_str: Property,
     a_f32: Property,
 }
 
@@ -19,11 +19,11 @@ impl Default for MySubConfig {
                 ":sub.a_u64",
                 Value::try_from(Self::default_a_u64()).unwrap(),
             ),
-            // an_str: Property::new(
-            //     "an_str",
-            //     ":an_str",
-            //     Value::try_from(Self::default_an_str()).unwrap(),
-            // ),
+            an_str: Property::new(
+                "an_str",
+                ":sub.an_str",
+                Value::try_from(Self::default_an_str()).unwrap(),
+            ),
             a_f32: Property::new(
                 "a_f32",
                 ":sub.a_f32",
@@ -48,18 +48,18 @@ impl MySubConfig {
         self.a_u64.set_value(built_value);
     }
 
-    // pub fn default_a_str() -> &'a str {
-    //     false
-    // }
-    //
-    // pub fn a_bool(&self) -> bool {
-    //     self.a_bool.value().try_into().unwrap()
-    // }
-    //
-    // pub fn set_a_bool_value(&mut self, value: bool) {
-    //     let built_value = Value::try_from(value).unwrap();
-    //     self.a_bool.set_value(built_value);
-    // }
+    pub fn default_an_str() -> &'static str {
+        "james"
+    }
+
+    pub fn an_str<'a>(&'a self) -> &'a str {
+        self.an_str.value().try_into().unwrap()
+    }
+
+    pub fn set_an_str_value(&mut self, value: &str) {
+        let built_value = Value::try_from(value).unwrap();
+        self.an_str.set_value(built_value);
+    }
 
     pub fn default_a_f32() -> f32 {
         500.3001
@@ -215,6 +215,7 @@ mod tests {
         assert_eq!("michael".to_string(), config.a_string());
 
         assert_eq!(200, config.sub().a_u64());
+        assert_eq!("james", config.sub().an_str());
         assert_eq!(500.3001, config.sub().a_f32());
     }
 
@@ -231,9 +232,11 @@ mod tests {
         assert_eq!("wilson".to_string(), config.a_string());
 
         config.sub_mut().set_a_u64_value(111);
+        config.sub_mut().set_an_str_value("richards");
         config.sub_mut().set_a_f32_value(222.333);
 
         assert_eq!(111, config.sub().a_u64());
+        assert_eq!("richards", config.sub().an_str());
         assert_eq!(222.333, config.sub().a_f32());
     }
 }
