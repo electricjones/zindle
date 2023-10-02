@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 use std::collections::HashMap;
 
+use crate::values::Value;
+
 pub trait Map<K, V, P> {
     // First
     fn get(&self, key: &K) -> Option<&V>;
@@ -74,23 +76,28 @@ pub struct Routine {
     annotations: Vec<Annotation>,
 }
 
-pub enum Value {
-    Int(i128),
-    Uint(u128),
-    Float(f64),
-    String(String),
-    Boolean(bool),
-    Array(Vec<Value>),
-    Dictionary(Box<dyn Map<String, Value, Property>>),
-    Tuple(Vec<Value>),
-    Routine(Routine),
-}
-
 pub struct Property {
-    pub value: Value,
+    value: Option<Value>,
+    default: Value,
     annotations: Vec<Annotation>,
     name: String,
     path: String, // Fully qualified namespace
+}
+
+impl Property {
+    pub fn new(name: &str, path: &str, default: Value) -> Self {
+        Self {
+            name: name.to_string(),
+            path: path.to_string(),
+            default,
+            value: None,
+            annotations: vec![],
+        }
+    }
+
+    pub fn value(&self) -> &Value {
+        self.value.as_ref().unwrap_or(&self.default)
+    }
 }
 
 pub struct Collection {
@@ -110,8 +117,9 @@ impl Map<String, Value, Property> for Collection {
     /// Any None's will return None for the entire path
     /// Any sub dictionaries will return another instance of Dictionary, which will just be the Map
     fn get(&self, key: &String) -> Option<&Value> {
-        // TODO: If value is a Routine, execute the routine and cache the result
-        Some(&self.inner.get(key).unwrap().value)
+        todo!()
+        // // TODO: If value is a Routine, execute the routine and cache the result
+        // Some(&self.inner.get(key).unwrap().value)
     }
 
     fn property(&self, _key: &String) -> Option<&Property> {
