@@ -1,3 +1,7 @@
+## ToDo
+- 
+- Change anonymous functions to lamdas and name all of them collectively "routines"
+
 ## Chat Notes for improvement
 The specifications for the Zindle language seem well-detailed and thoughtfully structured. They lay a solid foundation for developers and AI to work within a defined framework while writing or generating game configurations. Here are some feedback and considerations regarding the specifications:
 
@@ -35,9 +39,6 @@ The specifications for the Zindle language seem well-detailed and thoughtfully s
         Consideration for tooling, such as a script editor, debugger, or a linter could also be beneficial to provide a more developer-friendly environment.
 
 These considerations aim to provide a more comprehensive, robust, and developer-friendly framework for game configuration scripting using Zindle.
-
-## ToDO
-- Change anonymous functions to lamdas and name all of them collectively "routines"
 
 ## Scraps
 ```

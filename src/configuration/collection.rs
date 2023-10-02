@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 use std::collections::HashMap;
 
-use crate::values::Value;
+use crate::values::{Value, ValueType};
 
 pub trait Map<K, V, P> {
     // First
@@ -49,33 +49,54 @@ pub trait Map<K, V, P> {
     // fn with_hasher(hasher: S) -> Self;
 }
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct Annotation {}
 
+#[derive(Debug, PartialEq, Clone)]
 pub enum Instruction {
     Add,
     Multiply,
     // etc
 }
 
+#[derive(Debug, PartialEq, Clone)]
 enum RoutineKind {
     Function(String),
     Lambda,
     Event(String),
 }
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct Argument {
     name: String,
     kind: String,
 }
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct Routine {
-    bytecode: Vec<Instruction>,
-    value: Option<Box<Value>>,
-    arguments: Vec<Argument>,
     kind: RoutineKind,
+    bytecode: Vec<Instruction>,
+    arguments: Vec<Argument>,
+    return_type: ValueType,
     annotations: Vec<Annotation>,
+    for_now: Box<Value>,
 }
 
+// TODO: There is no default routine unless a lamda that returns ()
+impl Default for Routine {
+    fn default() -> Self {
+        Self {
+            bytecode: Default::default(),
+            arguments: Default::default(),
+            return_type: ValueType::Int,
+            kind: RoutineKind::Lambda,
+            annotations: Default::default(),
+            for_now: Box::new(Value::try_from("this is a temporary value").unwrap()),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub struct Property {
     value: Option<Value>,
     default: Value,
@@ -96,7 +117,25 @@ impl Property {
     }
 
     pub fn value(&self) -> &Value {
-        self.value.as_ref().unwrap_or(&self.default)
+        // self.value.as_ref().unwrap_or(&self.default)
+
+        // If there is already a value, use that value
+        // If there is no value, and **there is a routine**, run the routine
+        // If there is a routine, and it errors, use the default
+        // If there is no value and no routine, use the default
+
+        let value = self.value.as_ref().unwrap_or(&self.default);
+        match value {
+            // If this is a routine, call the routine to return the value
+            // @todo: Allow for caching and #[run_once]
+            Value::Routine(routine) => {
+                // @todo: implement all this using the virtual machine somehow
+                // @todo: handle errors
+                &*routine.for_now
+            }
+            // Otherwise, just return the value itself
+            _ => value,
+        }
     }
 
     pub fn set_value(&mut self, value: Value) {
