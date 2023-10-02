@@ -1,7 +1,5 @@
 use std::{collections::HashMap, convert::TryFrom};
 
-// use crate::configuration::collection::{Map, Property, Routine};
-
 #[derive(Debug)]
 pub enum ValueError {
     ConversionError,
@@ -21,13 +19,31 @@ pub enum Value {
 }
 
 // TODO: TryFrom to just From (I think)
-// TODO: Implement Dictionary, Tuple, and Routine
 
+//////////////////////////////////////////////////
+
+impl TryFrom<&Value> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &Value) -> Result<Self, Self::Error> {
+        Ok(Value::from(value.clone()))
+    }
+}
+
+///////////////////// i128
 impl TryFrom<i128> for Value {
     type Error = ValueError;
 
     fn try_from(value: i128) -> Result<Self, Self::Error> {
         Ok(Value::Int(value))
+    }
+}
+
+impl TryFrom<&i128> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &i128) -> Result<Self, Self::Error> {
+        Ok(Value::Int(value.clone()))
     }
 }
 
@@ -53,11 +69,20 @@ impl TryFrom<Value> for i128 {
     }
 }
 
+//////////////////// i64
 impl TryFrom<i64> for Value {
     type Error = ValueError;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         Ok(Value::Int(value as i128))
+    }
+}
+
+impl TryFrom<&i64> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &i64) -> Result<Self, Self::Error> {
+        Ok(Value::Int(value.clone() as i128))
     }
 }
 
@@ -71,6 +96,7 @@ impl TryFrom<Value> for i64 {
         }
     }
 }
+
 impl TryFrom<&Value> for i64 {
     type Error = ValueError;
 
@@ -82,11 +108,20 @@ impl TryFrom<&Value> for i64 {
     }
 }
 
+/////////////////// i32
 impl TryFrom<i32> for Value {
     type Error = ValueError;
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         Ok(Value::Int(value as i128))
+    }
+}
+
+impl TryFrom<&i32> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &i32) -> Result<Self, Self::Error> {
+        Ok(Value::Int(value.clone() as i128))
     }
 }
 
@@ -112,11 +147,20 @@ impl TryFrom<&Value> for i32 {
     }
 }
 
+///////////////// i16
 impl TryFrom<i16> for Value {
     type Error = ValueError;
 
     fn try_from(value: i16) -> Result<Self, Self::Error> {
         Ok(Value::Int(value as i128))
+    }
+}
+
+impl TryFrom<&i16> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &i16) -> Result<Self, Self::Error> {
+        Ok(Value::Int(value.clone() as i128))
     }
 }
 
@@ -141,11 +185,20 @@ impl TryFrom<&Value> for i16 {
     }
 }
 
+/////////////////// i8
 impl TryFrom<i8> for Value {
     type Error = ValueError;
 
     fn try_from(value: i8) -> Result<Self, Self::Error> {
         Ok(Value::Int(value as i128))
+    }
+}
+
+impl TryFrom<&i8> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &i8) -> Result<Self, Self::Error> {
+        Ok(Value::Int(value.clone() as i128))
     }
 }
 
@@ -171,11 +224,20 @@ impl TryFrom<&Value> for i8 {
     }
 }
 
+//////////////////// u128
 impl TryFrom<u128> for Value {
     type Error = ValueError;
 
     fn try_from(value: u128) -> Result<Self, Self::Error> {
         Ok(Value::Uint(value))
+    }
+}
+
+impl TryFrom<&u128> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &u128) -> Result<Self, Self::Error> {
+        Ok(Value::Uint(value.clone() as u128))
     }
 }
 
@@ -201,11 +263,20 @@ impl TryFrom<&Value> for u128 {
     }
 }
 
+///////////////////// u64
 impl TryFrom<u64> for Value {
     type Error = ValueError;
 
     fn try_from(value: u64) -> Result<Self, Self::Error> {
         Ok(Value::Uint(value as u128))
+    }
+}
+
+impl TryFrom<&u64> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &u64) -> Result<Self, Self::Error> {
+        Ok(Value::Uint(value.clone() as u128))
     }
 }
 
@@ -230,11 +301,20 @@ impl TryFrom<&Value> for u64 {
     }
 }
 
+//////////////////// u32
 impl TryFrom<u32> for Value {
     type Error = ValueError;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         Ok(Value::Uint(value as u128))
+    }
+}
+
+impl TryFrom<&u32> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &u32) -> Result<Self, Self::Error> {
+        Ok(Value::Uint(value.clone() as u128))
     }
 }
 
@@ -248,6 +328,7 @@ impl TryFrom<Value> for u32 {
         }
     }
 }
+
 impl TryFrom<&Value> for u32 {
     type Error = ValueError;
 
@@ -258,11 +339,21 @@ impl TryFrom<&Value> for u32 {
         }
     }
 }
+
+//////////////////////// u16
 impl TryFrom<u16> for Value {
     type Error = ValueError;
 
     fn try_from(value: u16) -> Result<Self, Self::Error> {
         Ok(Value::Uint(value as u128))
+    }
+}
+
+impl TryFrom<&u16> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &u16) -> Result<Self, Self::Error> {
+        Ok(Value::Uint(value.clone() as u128))
     }
 }
 
@@ -288,11 +379,20 @@ impl TryFrom<&Value> for u16 {
     }
 }
 
+//////////////// u8
 impl TryFrom<u8> for Value {
     type Error = ValueError;
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         Ok(Value::Uint(value as u128))
+    }
+}
+
+impl TryFrom<&u8> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &u8) -> Result<Self, Self::Error> {
+        Ok(Value::Uint(value.clone() as u128))
     }
 }
 
@@ -306,6 +406,7 @@ impl TryFrom<Value> for u8 {
         }
     }
 }
+
 impl TryFrom<&Value> for u8 {
     type Error = ValueError;
 
@@ -317,11 +418,20 @@ impl TryFrom<&Value> for u8 {
     }
 }
 
+/////////////////// f64
 impl TryFrom<f64> for Value {
     type Error = ValueError;
 
     fn try_from(value: f64) -> Result<Self, Self::Error> {
         Ok(Value::Float(value as f64))
+    }
+}
+
+impl TryFrom<&f64> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &f64) -> Result<Self, Self::Error> {
+        Ok(Value::Float(value.clone() as f64))
     }
 }
 
@@ -347,11 +457,20 @@ impl TryFrom<&Value> for f64 {
     }
 }
 
+//////////////// f32
 impl TryFrom<f32> for Value {
     type Error = ValueError;
 
     fn try_from(value: f32) -> Result<Self, Self::Error> {
         Ok(Value::Float(value as f64))
+    }
+}
+
+impl TryFrom<&f32> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &f32) -> Result<Self, Self::Error> {
+        Ok(Value::Float(value.clone() as f64))
     }
 }
 
@@ -377,11 +496,20 @@ impl TryFrom<&Value> for f32 {
     }
 }
 
+/////////////////// String
 impl TryFrom<String> for Value {
     type Error = ValueError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         Ok(Value::String(value))
+    }
+}
+
+impl TryFrom<&String> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &String) -> Result<Self, Self::Error> {
+        Ok(Value::String(value.clone()))
     }
 }
 
@@ -407,6 +535,7 @@ impl TryFrom<&Value> for String {
     }
 }
 
+////////////////// &str
 impl TryFrom<&str> for Value {
     type Error = ValueError;
 
@@ -415,7 +544,6 @@ impl TryFrom<&str> for Value {
     }
 }
 
-// Implement for &String instead of &str because of lifetimes
 impl<'a> TryFrom<&'a Value> for &'a String {
     type Error = ValueError;
 
@@ -450,13 +578,20 @@ impl<'a> TryFrom<&'a Value> for &'a str {
     }
 }
 
-///////////////////////////////////
-
+///////////////////////// bool
 impl TryFrom<bool> for Value {
     type Error = ValueError;
 
     fn try_from(value: bool) -> Result<Self, Self::Error> {
         Ok(Value::Boolean(value))
+    }
+}
+
+impl TryFrom<&bool> for Value {
+    type Error = ValueError;
+
+    fn try_from(value: &bool) -> Result<Self, Self::Error> {
+        Ok(Value::Boolean(value.clone()))
     }
 }
 
@@ -482,18 +617,7 @@ impl TryFrom<&Value> for bool {
     }
 }
 
-//////////////////////////////////////////////////
-
-impl TryFrom<&Value> for Value {
-    type Error = ValueError;
-
-    fn try_from(value: &Value) -> Result<Self, Self::Error> {
-        Ok(Value::from(value.clone()))
-    }
-}
-
-//////////////////////////////////////////////////
-
+//////////////////////////////////// Vec<T>
 impl<T> TryFrom<Vec<T>> for Value
 where
     T: TryInto<Value>,
@@ -505,6 +629,22 @@ where
         Ok(Value::Array(
             vec.into_iter()
                 .map(|item| item.try_into().unwrap())
+                .collect(),
+        ))
+    }
+}
+
+impl<T> TryFrom<&Vec<T>> for Value
+where
+    T: TryInto<Value> + Clone,
+    <T as TryInto<Value>>::Error: std::fmt::Debug,
+{
+    type Error = ValueError;
+
+    fn try_from(vec: &Vec<T>) -> Result<Self, Self::Error> {
+        Ok(Value::Array(
+            vec.into_iter()
+                .map(|item| item.clone().try_into().unwrap())
                 .collect(),
         ))
     }
@@ -546,8 +686,7 @@ where
     }
 }
 
-////////////////////////////////////////////////////
-
+////////////////////////////////// HashMap
 impl<V> TryFrom<HashMap<String, V>> for Value
 where
     V: TryInto<Value>,
@@ -559,6 +698,22 @@ where
         Ok(Value::Dictionary(
             map.into_iter()
                 .map(|(k, v)| (k.into(), v.try_into().unwrap()))
+                .collect(),
+        ))
+    }
+}
+
+impl<V> TryFrom<&HashMap<String, V>> for Value
+where
+    V: TryInto<Value> + Clone,
+    <V as TryInto<Value>>::Error: std::fmt::Debug,
+{
+    type Error = ValueError;
+
+    fn try_from(map: &HashMap<String, V>) -> Result<Self, Self::Error> {
+        Ok(Value::Dictionary(
+            map.into_iter()
+                .map(|(k, v)| (k.into(), v.clone().try_into().unwrap()))
                 .collect(),
         ))
     }
@@ -609,14 +764,3 @@ where
         }
     }
 }
-
-// impl<'a> TryFrom<&'a Value> for &'a HashMap<String, Value> {
-//     type Error = ValueError;
-//
-//     fn try_from(value: &'a Value) -> Result<Self, Self::Error> {
-//         match value {
-//             Value::Dictionary(map) => Ok(map),
-//             _ => Err(ValueError::ConversionError),
-//         }
-//     }
-// }

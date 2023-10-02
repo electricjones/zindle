@@ -419,44 +419,116 @@ mod tests {
 
     #[test]
     fn it_handles_value_conversions() {
+        // i8
         let value = 100 as i8;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        let value = 100 as i8;
+        assert_eq!(
+            value,
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
+        // i16
         let value = 10000 as i16;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
+        // i32
         let value = 1000000 as i32;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
+        // i64
         let value = 100000000 as i64;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
+        // i128
         let value = 10000000000 as i128;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
+        // u8
         let value = 100 as u8;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
 
         let value = 10000 as u16;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
         let value = 10000 as u32;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
 
         let value = 10000 as u64;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
         let value = 10000 as u128;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
 
         let value = 10000.1 as f32;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
         let value = 10000.1 as f64;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
 
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
+
         let value = true;
         assert_eq!(value, Value::try_from(value).unwrap().try_into().unwrap());
+
+        assert_eq!(
+            value.clone(),
+            (&Value::try_from(value).unwrap()).try_into().unwrap()
+        );
 
         let original = "test string".to_string();
         let built = Value::try_from(original.clone()).unwrap();
