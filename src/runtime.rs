@@ -1,7 +1,15 @@
-pub struct Runtime {}
+use crate::configuration::Configuration;
 
-impl Runtime {
-    pub fn new() -> Self {
-        Self {}
+pub struct Runtime<C: Configuration> {
+    config: C,
+}
+
+impl<C: Configuration> Runtime<C> {
+    pub fn new(config: C) -> Self {
+        Self { config }
+    }
+
+    pub fn config(&self) -> &C {
+        &self.config
     }
 }
