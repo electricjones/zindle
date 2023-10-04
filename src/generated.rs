@@ -9,14 +9,15 @@ use crate::{
 };
 
 /////////// Generated
-pub struct SubPreparedConfiguration {
+// Keep the original in comment form
+pub struct Sub {
     a_u64: Property,
     an_str: Property,
     a_f32: Property,
     a_routine: Property,
 }
 
-impl Default for SubPreparedConfiguration {
+impl Default for Sub {
     fn default() -> Self {
         Self {
             a_u64: Property::new(
@@ -43,10 +44,10 @@ impl Default for SubPreparedConfiguration {
     }
 }
 
-impl Configuration for SubPreparedConfiguration {}
+impl Configuration for Sub {}
 
 // Generated
-impl SubPreparedConfiguration {
+impl Sub {
     pub fn default_a_u64() -> u64 {
         200
     }
@@ -100,7 +101,7 @@ impl SubPreparedConfiguration {
     }
 }
 
-pub struct RootPreparedConfiguration {
+pub struct Root {
     an_i32: Property,
     a_bool: Property,
     a_string: Property,
@@ -108,12 +109,12 @@ pub struct RootPreparedConfiguration {
     a_mixed_array: Property,
     a_dictionary: Property,
     a_mixed_dictionary: Property,
-    sub: SubPreparedConfiguration,
+    sub: Sub,
 }
 
-impl Configuration for RootPreparedConfiguration {}
+impl Configuration for Root {}
 
-impl Default for RootPreparedConfiguration {
+impl Default for Root {
     fn default() -> Self {
         Self {
             an_i32: Property::new(
@@ -152,13 +153,13 @@ impl Default for RootPreparedConfiguration {
                 Value::try_from(Self::default_a_mixed_dictionary()).unwrap(),
             ),
 
-            sub: SubPreparedConfiguration::default(),
+            sub: Sub::default(),
         }
     }
 }
 
 // Generated
-impl RootPreparedConfiguration {
+impl Root {
     pub fn default_an_i32() -> i32 {
         28
     }
@@ -257,11 +258,11 @@ impl RootPreparedConfiguration {
         self.a_mixed_dictionary.set_value(built_value);
     }
 
-    pub fn sub(&self) -> &SubPreparedConfiguration {
+    pub fn sub(&self) -> &Sub {
         &self.sub
     }
 
-    pub fn sub_mut(&mut self) -> &mut SubPreparedConfiguration {
+    pub fn sub_mut(&mut self) -> &mut Sub {
         &mut self.sub
     }
 }

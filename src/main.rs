@@ -1,6 +1,14 @@
+extern crate derive_builder;
+
+use generated::Root;
+use runtime::{Runtime, RuntimeBuilder};
+use scripts::Script;
+
 pub mod configuration;
 pub mod generated;
 pub mod runtime;
+pub mod scripts;
+mod utilities;
 pub mod values;
 
 // #[derive(Configuration)]
@@ -27,30 +35,32 @@ pub mod values;
 // }
 
 fn main() {
-    // // Required setup
-    // let runtime = Runtime::new(); // Use a builder pattern
-    // runtime.set_config(config);
-    //
-    // // Optional setup
-    // runtime.set_logger(logger);
-    // runtime.settings().set_name("Whatever");
-    // runtime.setting().virtual_machine().max_memory("500M");
-    // // etc
-    //
-    // // Many ways to set attach scripts
-    // // Will need precedent rules
+    let config = Root::default();
+    let runtime = RuntimeBuilder::default()
+        .config(config)
+        .add_script(Script::from_raw(String::from("My Contents")));
+
+    // Many ways to set attach scripts
     // runtime.scripts().add_directory("/path/to/scripts");
     // runtime.scripts().attach(Script::new());
     // runtime.scripts().add_raw("name", "script");
     // runtime.scripts().add_file("/path/to/whatever.zindle");
     //
-    // // And we can add contexts for those scripts, in addition to builtin
+    // Configure settings
+    // runtime.config().sub_mut().set_a_f32_value(20.22);
+
+    // Attach context
     // runtime.add_context("name", value, true);
     //
-    // // Register event hooks
+    // Register event hooks
     // runtime.add_event("EventName", []);
-    //
-    // // Now, we can get the party started
+
+    let runtime: Runtime<Root> = runtime.build().unwrap();
+
+    let value = runtime.config().sub().a_routine();
+    println!("{:?}", value);
+
+    // Now, we can get the party started
     // runtime.process_scripts(); // compile, etc
     // runtime.start(); // Startup vm and do eager loading
     //
@@ -65,11 +75,11 @@ fn main() {
 mod tests {
     use std::collections::HashMap;
 
-    use crate::{generated::RootPreparedConfiguration, values::Value};
+    use crate::{generated::Root, values::Value};
 
     #[test]
     fn it_uses_the_default_values() {
-        let config = RootPreparedConfiguration::default();
+        let config = Root::default();
 
         // Use the default value
         assert_eq!(28, config.an_i32());
@@ -79,7 +89,7 @@ mod tests {
 
     #[test]
     fn it_uses_statically_set_values() {
-        let mut config = RootPreparedConfiguration::default();
+        let mut config = Root::default();
 
         config.set_an_i32_value(100);
         config.set_a_bool_value(true);
@@ -92,7 +102,7 @@ mod tests {
 
     #[test]
     fn it_reads_defaults_from_the_sub_config() {
-        let config = RootPreparedConfiguration::default();
+        let config = Root::default();
 
         assert_eq!(28, config.an_i32());
         assert_eq!(false, config.a_bool());
@@ -105,7 +115,7 @@ mod tests {
 
     #[test]
     fn it_reads_statically_set_values_on_the_sub_config() {
-        let mut config = RootPreparedConfiguration::default();
+        let mut config = Root::default();
 
         config.set_an_i32_value(100);
         config.set_a_bool_value(true);
@@ -126,15 +136,15 @@ mod tests {
 
     #[test]
     fn it_uses_the_default_values_for_arrays() {
-        let config = RootPreparedConfiguration::default();
+        let config = Root::default();
 
-        let expected = RootPreparedConfiguration::default_an_array();
+        let expected = Root::default_an_array();
         assert_eq!(expected, config.an_array());
     }
 
     #[test]
     fn it_uses_statically_set_values_for_arrays() {
-        let mut config = RootPreparedConfiguration::default();
+        let mut config = Root::default();
 
         config.set_an_array_value(vec![false, true]);
 
@@ -143,15 +153,15 @@ mod tests {
 
     #[test]
     fn it_uses_the_default_values_for_dictionaries() {
-        let config = RootPreparedConfiguration::default();
+        let config = Root::default();
 
-        let expected = RootPreparedConfiguration::default_a_dictionary();
+        let expected = Root::default_a_dictionary();
         assert_eq!(expected, config.a_dictionary());
     }
 
     #[test]
     fn it_uses_statically_set_values_for_dictionaries() {
-        let mut config = RootPreparedConfiguration::default();
+        let mut config = Root::default();
 
         let expected = HashMap::from([("a".to_string(), 12.1), ("b".to_string(), 13.2)]);
 
@@ -162,15 +172,15 @@ mod tests {
 
     #[test]
     fn it_uses_the_default_values_for_mixed_arrays() {
-        let config = RootPreparedConfiguration::default();
+        let config = Root::default();
 
-        let expected = RootPreparedConfiguration::default_a_mixed_array();
+        let expected = Root::default_a_mixed_array();
         assert_eq!(expected, config.a_mixed_array());
     }
 
     #[test]
     fn it_uses_statically_set_values_for_mixed_arrays() {
-        let mut config = RootPreparedConfiguration::default();
+        let mut config = Root::default();
 
         let expected = vec![
             Value::try_from("oreo".to_string()).unwrap(),
@@ -184,15 +194,15 @@ mod tests {
 
     #[test]
     fn it_uses_the_default_values_for_mixed_dictionaries() {
-        let config = RootPreparedConfiguration::default();
+        let config = Root::default();
 
-        let expected = RootPreparedConfiguration::default_a_mixed_dictionary();
+        let expected = Root::default_a_mixed_dictionary();
         assert_eq!(expected, config.a_mixed_dictionary());
     }
 
     #[test]
     fn it_uses_statically_set_values_for_mixed_dictionaries() {
-        let mut config = RootPreparedConfiguration::default();
+        let mut config = Root::default();
 
         let expected = HashMap::from([
             ("a".to_string(), Value::try_from(true).unwrap()),
@@ -206,7 +216,7 @@ mod tests {
 
     #[test]
     fn it_reads_routine_executed_values() {
-        let config = RootPreparedConfiguration::default();
+        let config = Root::default();
 
         assert_eq!(
             "this is a temporary value".to_string(),
