@@ -38,7 +38,10 @@ fn main() {
     let config = Root::default();
     let runtime = RuntimeBuilder::default()
         .config(config)
-        .add_script(Script::from_raw(String::from("My Contents")));
+        .add_script(Script::from_raw(
+            String::from("Test script contents"),
+            "my-test-script".into(),
+        ));
 
     // Many ways to set attach scripts
     // runtime.scripts().add_directory("/path/to/scripts");

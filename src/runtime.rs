@@ -1,6 +1,6 @@
 use crate::{
     configuration::Configuration,
-    scripts::{Script, ScriptsCollection},
+    scripts::{collection::ScriptsCollection, Script},
 };
 
 #[derive(Debug)]
