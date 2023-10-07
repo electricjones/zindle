@@ -10,6 +10,10 @@ pub struct Runtime<C: Configuration> {
 }
 
 impl<C: Configuration> Runtime<C> {
+    pub fn process_scripts(&mut self) -> Result<(), ()> {
+        Ok(())
+    }
+
     pub fn config(&self) -> &C {
         &self.config
     }

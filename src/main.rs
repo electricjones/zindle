@@ -58,13 +58,12 @@ fn main() {
     // Register event hooks
     // runtime.add_event("EventName", []);
 
-    let runtime: Runtime<Root> = runtime.build().unwrap();
-
-    let value = runtime.config().sub().a_routine();
-    println!("{:?}", value);
+    let mut runtime: Runtime<Root> = runtime.build().unwrap();
 
     // Now, we can get the party started
-    // runtime.process_scripts(); // compile, etc
+    runtime.process_scripts().unwrap();
+
+    // compile, etc
     // runtime.start(); // Startup vm and do eager loading
     //
     // // Finally, I use it like I nomrally would
@@ -72,6 +71,10 @@ fn main() {
     // // or, this just passes down
     // runtime.get("a_routine", "override_default instead of default on config");
     // runtime.get(":sub.a_routine", "same override");
+
+    // Just to make sure this works
+    let value = runtime.config().sub().a_routine();
+    println!("{:?}", value);
 }
 
 #[cfg(test)]

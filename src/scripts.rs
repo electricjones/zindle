@@ -14,7 +14,7 @@ pub type ScriptPath = String;
 struct ScriptMeta {
     version: ScriptVersion,
     path: ScriptPath,
-    name: String,
+    // name: String,
 }
 
 #[derive(Debug)]
@@ -25,11 +25,11 @@ pub struct Script {
 
 // TODO: Maybe a way to eager load scripts
 impl Script {
-    pub fn from_raw(content: String, name: String) -> Self {
+    pub fn from_raw(content: String, _name: String) -> Self {
         let version = ScriptVersion::from_contents(&content);
         let meta = ScriptMeta {
-            name,
-            path: format!("raw:{}", version),
+            // name,
+            path: format!("raw:/{}", version),
             version,
         };
 

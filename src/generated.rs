@@ -158,7 +158,10 @@ impl Default for Root {
     }
 }
 
-// Generated
+// Generated for Root
+impl Root {}
+
+// Generated getters
 impl Root {
     pub fn default_an_i32() -> i32 {
         28
