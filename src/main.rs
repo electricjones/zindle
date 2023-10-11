@@ -6,6 +6,7 @@ use scripts::Script;
 
 pub mod configuration;
 pub mod generated;
+pub mod processor;
 pub mod runtime;
 pub mod scripts;
 mod utilities;
@@ -57,11 +58,17 @@ fn main() {
     //
     // Register event hooks
     // runtime.add_event("EventName", []);
+    //
+    // runtime.start();
+    // # Process scripts
+    //  - Parse the script files
+    //  - Build HashMaps with the key-value pairs
+    //
 
     let mut runtime: Runtime<Root> = runtime.build().unwrap();
 
     // Now, we can get the party started
-    runtime.process_scripts().unwrap();
+    runtime.start().unwrap();
 
     // compile, etc
     // runtime.start(); // Startup vm and do eager loading

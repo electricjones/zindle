@@ -1,5 +1,6 @@
 use crate::{
     configuration::Configuration,
+    processor::Processor,
     scripts::{collection::ScriptsCollection, Script},
 };
 
@@ -10,7 +11,18 @@ pub struct Runtime<C: Configuration> {
 }
 
 impl<C: Configuration> Runtime<C> {
-    pub fn process_scripts(&mut self) -> Result<(), ()> {
+    // TODO: This will need to be broken into many methods on the builder, maybe
+    pub fn start(&mut self) -> Result<(), ()> {
+        // TODO: Should I save these? Will they need to be reprocessed?
+        let processed_map = Processor::create_map_from(&self.scripts);
+
+        // Now, set the processed values on the config object
+        for (k, v) in processed_map {
+            self.config.set(k, v);
+        }
+
+        // TODO: THis should also start of the VM and probably other things
+        // TODO: This should probably return something useful
         Ok(())
     }
 

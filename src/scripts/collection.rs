@@ -8,7 +8,6 @@ pub struct ScriptsCollection {
 
 impl ScriptsCollection {
     pub fn add(&mut self, script: Script, _priority: Option<u8>) {
-        // TODO: Probably not a great script id
         let script_id = format!("{}@{}", script.meta.path, script.meta.version);
         self.scripts.insert(script_id, script);
     }
@@ -17,3 +16,5 @@ impl ScriptsCollection {
         self.scripts.is_empty()
     }
 }
+
+// TODO: Implement iter from ChatGPT
