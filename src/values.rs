@@ -906,12 +906,12 @@ mod tests {
         assert_eq!(original, actual);
 
         let original = "test string2";
-        let built = Value::try_from(original.clone()).unwrap();
+        let built = Value::try_from(original).unwrap();
         let actual: String = built.try_into().unwrap();
         assert_eq!(original, actual);
 
         let original = "test string3";
-        let built = Value::try_from(original.clone()).unwrap();
+        let built = Value::try_from(original).unwrap();
         let actual: &String = &built.try_into().unwrap();
         assert_eq!(original, actual);
 

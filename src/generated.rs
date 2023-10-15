@@ -1,9 +1,9 @@
+use maplit::hashmap;
+use std::any::Any;
 use std::collections::HashMap;
 
-use maplit::hashmap;
-
 use crate::{
-    configuration::{Configuration, ConfigurationEntries, NestedConfigurations, Property},
+    configuration::{collection::Routine, Configuration, ConfigurationEntries, Property},
     values::Value,
 };
 
@@ -11,36 +11,28 @@ use crate::{
 // Keep the original in comment form
 pub struct Sub {
     values: ConfigurationEntries,
-    nested: NestedConfigurations,
 }
 
 impl Default for Sub {
     fn default() -> Self {
         Self {
-            nested: hashmap! {},
             values: hashmap! {
-                "a_u64".to_string() =>
-                    Property::new(
-                        "a_u64",
-                        ":sub.a_u64",
-                        Value::try_from(Self::default_a_u64()).unwrap(),
-                    ),
-            // "an_str".to_string() =>  Property::new(
-            //     "an_str",
-            //     ":sub.an_str",
-            //     Value::try_from(Self::default_an_str()).unwrap(),
-            // ),
-            // "a_f32".to_string() =>  Property::new(
-            //     "a_f32",
-            //     ":sub.a_f32",
-            //     Value::try_from(Self::default_a_f32()).unwrap(),
-            // ),
-            // "a_routine".to_string() => Property::new(
-            //     "a_routine",
-            //     ":sub.a_routine",
-            //     Value::Routine(Routine::default()),
-            // ),
-
+                "a_u64".to_string() => Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_a_u64()).unwrap(),
+                },
+                "an_str".to_string() =>  Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_an_str()).unwrap(),
+                },
+                "a_f32".to_string() =>  Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_a_f32()).unwrap(),
+                },
+                "a_routine".to_string() => Property::Entry {
+                    value: None,
+                    default: Value::Routine(Routine::default()),
+                },
             },
         }
     }
@@ -56,7 +48,6 @@ impl Configuration for Sub {
     }
 }
 
-// Generated
 impl Sub {
     pub fn default_a_u64() -> u64 {
         200
@@ -67,13 +58,18 @@ impl Sub {
             .get("a_u64")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
 
     pub fn set_a_u64_value(&mut self, value: u64) {
         let built_value = Value::try_from(value).unwrap();
-        self.values.get_mut("a_u64").unwrap().set_value(built_value);
+        self.values
+            .get_mut("a_u64")
+            .unwrap()
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_an_str() -> &'static str {
@@ -85,6 +81,7 @@ impl Sub {
             .get("an_str")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
@@ -94,7 +91,8 @@ impl Sub {
         self.values
             .get_mut("an_str")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_a_f32() -> f32 {
@@ -106,13 +104,18 @@ impl Sub {
             .get("a_f32")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
 
     pub fn set_a_f32_value(&mut self, value: f32) {
         let built_value = Value::try_from(value).unwrap();
-        self.values.get_mut("a_f32").unwrap().set_value(built_value);
+        self.values
+            .get_mut("a_f32")
+            .unwrap()
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_a_routine() -> String {
@@ -124,6 +127,7 @@ impl Sub {
             .get("a_routine")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap() // This can only fail if this is called on a Property::Sub
             .try_into()
             .unwrap()
     }
@@ -133,21 +137,21 @@ impl Sub {
         self.values
             .get_mut("a_routine")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 }
 
 pub struct Root {
     values: ConfigurationEntries,
-    nested: NestedConfigurations,
 }
 
 impl Configuration for Root {
-    fn values(&self) -> &configuration::ConfigurationEntries {
+    fn values(&self) -> &ConfigurationEntries {
         &self.values
     }
 
-    fn values_mut(&mut self) -> &mut configuration::ConfigurationEntries {
+    fn values_mut(&mut self) -> &mut ConfigurationEntries {
         &mut self.values
     }
 }
@@ -155,47 +159,38 @@ impl Configuration for Root {
 impl Default for Root {
     fn default() -> Self {
         Self {
-            nested: hashmap! {
-                "sub".to_string() => Box::new(Sub::default()) as Box<dyn Configuration>
-            },
             values: hashmap! {
-                // "an_i32".to_string() =>  Property::new(
-                //     "an_i32",
-                //     ":an_i32",
-                //     Value::try_from(Self::default_an_i32()).unwrap(),
-                // ),
-                // "a_bool".to_string() => Property::new(
-                //     "a_bool",
-                //     ":a_bool",
-                //     Value::try_from(Self::default_a_bool()).unwrap(),
-                // ),
-                // "a_string".to_string() => Property::new(
-                //     "a_string",
-                //     ":a_string",
-                //     Value::try_from(Self::default_a_string()).unwrap(),
-                // ),
-                // "an_array".to_string() => Property::new(
-                //     "an_array",
-                //     ":an_array",
-                //     Value::try_from(Self::default_an_array()).unwrap(),
-                // ),
-                // "a_mixed_array".to_string() => Property::new(
-                //     "a_mixed_array",
-                //     ":a_mixed_array",
-                //     Value::try_from(Self::default_a_mixed_array()).unwrap(),
-                // ),
-                // "a_dictionary".to_string() => Property::new(
-                //     "a_dictionary",
-                //     ":a_dictionary",
-                //     Value::try_from(Self::default_a_dictionary()).unwrap(),
-                // ),
-                // "a_mixed_dictionary".to_string() => Property::new(
-                //     "a_mixed_dictionary",
-                //     ":a_mixed_dictionary",
-                //     Value::try_from(Self::default_a_mixed_dictionary()).unwrap(),
-                // ),
-                // // "sub".to_string() => Property::default(),
-                //
+                "an_i32".to_string() =>  Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_an_i32()).unwrap(),
+                },
+                "a_bool".to_string() => Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_a_bool()).unwrap(),
+                },
+                "a_string".to_string() => Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_a_string()).unwrap(),
+                },
+                "an_array".to_string() => Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_an_array()).unwrap(),
+                },
+                "a_mixed_array".to_string() => Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_a_mixed_array()).unwrap(),
+                },
+                "a_dictionary".to_string() => Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_a_dictionary()).unwrap(),
+                },
+                "a_mixed_dictionary".to_string() => Property::Entry {
+                    value: None,
+                    default: Value::try_from(Self::default_a_mixed_dictionary()).unwrap(),
+                },
+                "sub".to_string() => Property::Nested {
+                    value: Box::new(Sub::default())
+                }
             },
         }
     }
@@ -212,6 +207,7 @@ impl Root {
             .get("an_i32")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
@@ -221,7 +217,8 @@ impl Root {
         self.values
             .get_mut("an_i32")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_a_bool() -> bool {
@@ -233,6 +230,7 @@ impl Root {
             .get("a_bool")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
@@ -242,7 +240,8 @@ impl Root {
         self.values
             .get_mut("a_bool")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_a_string() -> String {
@@ -254,6 +253,7 @@ impl Root {
             .get("a_string")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
@@ -263,7 +263,8 @@ impl Root {
         self.values
             .get_mut("a_string")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_an_array() -> Vec<bool> {
@@ -275,6 +276,7 @@ impl Root {
             .get("an_array")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
@@ -284,7 +286,8 @@ impl Root {
         self.values
             .get_mut("an_array")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_a_mixed_array() -> Vec<Value> {
@@ -300,6 +303,7 @@ impl Root {
             .get("a_mixed_array")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
@@ -309,7 +313,8 @@ impl Root {
         self.values
             .get_mut("a_mixed_array")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_a_dictionary() -> HashMap<String, f32> {
@@ -321,6 +326,7 @@ impl Root {
             .get("a_dictionary")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
@@ -330,7 +336,8 @@ impl Root {
         self.values
             .get_mut("a_dictionary")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn default_a_mixed_dictionary() -> HashMap<String, Value> {
@@ -345,6 +352,7 @@ impl Root {
             .get("a_mixed_dictionary")
             .unwrap() // This is safe to unwrap, its guarenteed
             .value()
+            .unwrap()
             .try_into()
             .unwrap()
     }
@@ -354,14 +362,31 @@ impl Root {
         self.values
             .get_mut("a_mixed_dictionary")
             .unwrap()
-            .set_value(built_value);
+            .set_value(built_value)
+            .unwrap();
     }
 
     pub fn sub(&self) -> &Sub {
-        todo!()
+        match self.values.get("sub").unwrap() {
+            Property::Nested { value } => {
+                let any_ref: &(dyn Any + 'static) = &**value;
+                any_ref
+                    .downcast_ref::<Sub>()
+                    .expect("Failed to downcast to Sub")
+            }
+            _ => panic!("Cannot return an Entry from a Sub"),
+        }
     }
 
     pub fn sub_mut(&mut self) -> &mut Sub {
-        todo!()
+        match self.values.get_mut("sub").unwrap() {
+            Property::Nested { value } => {
+                let any_ref: &mut (dyn Any + 'static) = &mut **value;
+                any_ref
+                    .downcast_mut::<Sub>()
+                    .expect("Failed to downcast to Sub")
+            }
+            _ => panic!("Cannot return an Entry from a Sub"),
+        }
     }
 }

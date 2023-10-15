@@ -1,3 +1,4 @@
+#![feature(trait_upcasting)]
 extern crate derive_builder;
 
 use generated::Root;
