@@ -70,9 +70,6 @@ fn main() {
     // Now, we can get the party started
     runtime.start().unwrap();
 
-    // compile, etc
-    // runtime.start(); // Startup vm and do eager loading
-    //
     // // Finally, I use it like I nomrally would
     // runtime.config.sub().a_string();
     // // or, this just passes down

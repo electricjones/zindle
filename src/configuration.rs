@@ -1,4 +1,4 @@
-use crate::values::Value;
+use crate::{processor::ProcessedScriptMap, values::Value};
 use std::{any::Any, collections::HashMap};
 
 pub mod collection;
@@ -66,23 +66,35 @@ impl Property {
 }
 
 pub trait Configuration: Any {
-    fn set(&mut self, key: &str, value: Value) {
-        set_nested(&mut self.values_mut(), key, value);
+    fn set(&mut self, key: &str, value: Value) -> Result<(), String> {
+        set_nested(&mut self.values_mut(), key, value)
     }
 
     fn values(&self) -> &ConfigurationEntries;
     fn values_mut(&mut self) -> &mut ConfigurationEntries;
+
+    fn merge_script_map(&mut self, map: ProcessedScriptMap) -> Result<(), String> {
+        for (k, v) in map {
+            self.set(&k, v)?
+        }
+
+        Ok(())
+    }
 }
 
-fn set_nested(fields: &mut HashMap<String, Property>, key: &str, value: Value) {
+fn set_nested(
+    fields: &mut HashMap<String, Property>,
+    key: &str,
+    value: Value,
+) -> Result<(), String> {
     let mut parts = key.splitn(2, '.');
     if let Some(first) = parts.next() {
         match fields.get_mut(first) {
             Some(Property::Nested { value: nested }) => {
                 if let Some(rest) = parts.next() {
-                    nested.set(rest, value);
+                    nested.set(rest, value)?;
                 } else {
-                    panic!("Invalid key: {}", key);
+                    return Err(format!("Invalid key: {}", key));
                 }
             }
             Some(Property::Entry { .. }) => {
@@ -90,12 +102,63 @@ fn set_nested(fields: &mut HashMap<String, Property>, key: &str, value: Value) {
                     let v = fields.get_mut(first).unwrap();
                     v.set_value(value).unwrap();
                 } else {
-                    panic!("Invalid key: {}", key);
+                    return Err(format!("Invalid key: {}", key));
                 }
             }
             None => {
-                panic!("Invalid key: {}", key);
+                return Err(format!("Invalid key: {}", key));
             }
         }
     }
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use maplit::hashmap;
+
+    use crate::values::Value;
+
+    use super::{Configuration, ConfigurationEntries, Property};
+
+    #[derive(Default)]
+    struct MockedConfig {
+        pub entries: ConfigurationEntries,
+    }
+
+    impl Configuration for MockedConfig {
+        fn values(&self) -> &super::ConfigurationEntries {
+            &self.entries
+        }
+
+        fn values_mut(&mut self) -> &mut super::ConfigurationEntries {
+            &mut self.entries
+        }
+    }
+
+    // #[test]
+    // fn it_merges_a_map() {
+    //     let mut config = MockedConfig {
+    //         entries: hashmap! {
+    //             "testing".to_string() => Property::Entry { default: Value::Int(12), value: None },
+    //         },
+    //     };
+    //
+    //     let map = hashmap! {
+    //         "testing".to_string() => Value::Int(200),
+    //     };
+    //
+    //     config.merge_script_map(map).unwrap();
+    //
+    //     let actual: i128 = config
+    //         .entries
+    //         .get("testing")
+    //         .unwrap()
+    //         .clone()
+    //         .value()
+    //         .unwrap() as i32;
+    //
+    //     assert_eq!(200, actual);
+    // }
 }

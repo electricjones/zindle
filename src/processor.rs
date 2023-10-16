@@ -6,10 +6,12 @@ use crate::{
     configuration::collection::Routine, scripts::collection::ScriptsCollection, values::Value,
 };
 
+pub type ProcessedScriptMap = HashMap<String, Value>;
+
 #[derive(Default)]
 pub struct Processor {}
 impl Processor {
-    pub fn create_map_from(_scripts: &ScriptsCollection) -> HashMap<String, Value> {
+    pub fn create_map_from(_scripts: &ScriptsCollection) -> ProcessedScriptMap {
         // TODO: Much later problem
         hashmap! {
             String::from("an_i32") => Value::Int(103),

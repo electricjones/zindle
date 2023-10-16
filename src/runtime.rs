@@ -12,14 +12,12 @@ pub struct Runtime<C: Configuration> {
 
 impl<C: Configuration> Runtime<C> {
     // TODO: This will need to be broken into many methods on the builder, maybe
-    pub fn start(&mut self) -> Result<(), ()> {
+    pub fn start(&mut self) -> Result<(), String> {
         // TODO: Should I save these? Will they need to be reprocessed?
         let processed_map = Processor::create_map_from(&self.scripts);
 
         // Now, set the processed values on the config object
-        for (k, v) in processed_map {
-            self.config.set(&k, v);
-        }
+        self.config.merge_script_map(processed_map)?;
 
         // TODO: THis should also start of the VM and probably other things
         // TODO: This should probably return something useful
