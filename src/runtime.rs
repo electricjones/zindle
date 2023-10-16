@@ -18,7 +18,7 @@ impl<C: Configuration> Runtime<C> {
 
         // Now, set the processed values on the config object
         for (k, v) in processed_map {
-            self.config.set(k, v);
+            self.config.set(&k, v);
         }
 
         // TODO: THis should also start of the VM and probably other things
@@ -68,7 +68,7 @@ impl<C: Configuration> RuntimeBuilder<C> {
         self
     }
 
-    pub fn add_script(mut self, script: Script) -> Self {
+    pub fn add_script(&mut self, script: Script) -> &Self {
         self.scripts.add(script, None);
         self
     }

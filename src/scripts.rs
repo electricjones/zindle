@@ -11,9 +11,9 @@ pub type ScriptId = String;
 pub type ScriptPath = String;
 
 #[derive(Debug)]
-struct ScriptMeta {
-    version: ScriptVersion,
-    path: ScriptPath,
+pub struct ScriptMeta {
+    pub version: ScriptVersion,
+    pub path: ScriptPath,
     // name: String,
 }
 

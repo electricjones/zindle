@@ -9,11 +9,9 @@ pub struct ScriptVersion {
 impl ScriptVersion {
     pub fn from_contents(contents: &String) -> Self {
         let version = format!("{:x}", md5::compute(contents));
+        let short = version.chars().take(7).collect();
 
-        Self {
-            version: version.clone(),
-            short: version.chars().take(7).collect(),
-        }
+        Self { version, short }
     }
 
     pub fn short(&self) -> &String {
@@ -23,7 +21,7 @@ impl ScriptVersion {
 
 impl Display for ScriptVersion {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self)
+        write!(f, "{}", self.version)
     }
 }
 

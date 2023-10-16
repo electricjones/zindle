@@ -66,12 +66,36 @@ impl Property {
 }
 
 pub trait Configuration: Any {
-    fn set(&mut self, _key: String, _value: Value) {
-        // TODO: This needs to actually set this on the values
-        // Using :dot.notation.keys
-        todo!()
+    fn set(&mut self, key: &str, value: Value) {
+        set_nested(&mut self.values_mut(), key, value);
     }
 
     fn values(&self) -> &ConfigurationEntries;
     fn values_mut(&mut self) -> &mut ConfigurationEntries;
+}
+
+fn set_nested(fields: &mut HashMap<String, Property>, key: &str, value: Value) {
+    let mut parts = key.splitn(2, '.');
+    if let Some(first) = parts.next() {
+        match fields.get_mut(first) {
+            Some(Property::Nested { value: nested }) => {
+                if let Some(rest) = parts.next() {
+                    nested.set(rest, value);
+                } else {
+                    panic!("Invalid key: {}", key);
+                }
+            }
+            Some(Property::Entry { .. }) => {
+                if parts.next().is_none() {
+                    let v = fields.get_mut(first).unwrap();
+                    v.set_value(value).unwrap();
+                } else {
+                    panic!("Invalid key: {}", key);
+                }
+            }
+            None => {
+                panic!("Invalid key: {}", key);
+            }
+        }
+    }
 }

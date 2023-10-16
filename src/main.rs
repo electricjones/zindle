@@ -38,12 +38,12 @@ pub mod values;
 
 fn main() {
     let config = Root::default();
-    let runtime = RuntimeBuilder::default()
-        .config(config)
-        .add_script(Script::from_raw(
-            String::from("Test script contents"),
-            "my-test-script".into(),
-        ));
+    let mut runtime: RuntimeBuilder<Root> = RuntimeBuilder::default().config(config);
+
+    runtime.add_script(Script::from_raw(
+        String::from("Test script contents"),
+        "my-test-script".into(),
+    ));
 
     // Many ways to set attach scripts
     // runtime.scripts().add_directory("/path/to/scripts");
@@ -60,7 +60,6 @@ fn main() {
     // Register event hooks
     // runtime.add_event("EventName", []);
     //
-    // runtime.start();
     // # Process scripts
     //  - Parse the script files
     //  - Build HashMaps with the key-value pairs
@@ -81,8 +80,11 @@ fn main() {
     // runtime.get(":sub.a_routine", "same override");
 
     // Just to make sure this works
-    let value = runtime.config().sub().a_routine();
-    println!("{:?}", value);
+    // let value = runtime.config().sub().a_routine();
+    // println!("{:?}", value);
+    //
+    println!("{:?}", runtime.config().an_i32());
+    println!("{:?}", runtime.config().sub().a_routine());
 }
 
 #[cfg(test)]
